@@ -1,0 +1,42 @@
+Act as an Expert C++20 and Python 3.12 Software Architect and Senior Developer. 
+We are building a Secure File Transfer Client-Server System (Maman 06 - Defensive Systems Programming).
+
+=== PROJECT CONSTRAINTS & PRINCIPLES ===
+1. Architecture: OOP, SOLID principles, highly modular.
+2. Defensive Programming: Strict input validation, explicit bounds checking, exception safety (RAII in C++), and graceful error handling without crashes.
+3. Code Quality: NO MAGIC NUMBERS (use constexpr/enums in C++, constants/Enums in Python). Self-documenting names.
+4. Protocol Rules: Binary TCP, strictly Little-Endian for all numeric fields. 23-byte fixed header (ClientID: 16b, Version: 1b, Code: 2b, PayloadSize: 4b).
+5. Tech Stack:
+   - Client: C++20 (MSVC), boost::asio (TCP), Crypto++ (RSA 1024, AES-CBC 256).
+   - Server: Python 3.12, PyCryptodome, SQLite3 (defensive.db), multi-threading.
+
+=== ROADMAP & STAGES ===
+
+**Phase 1: Foundations & Configuration**
+[1.1] Client: Parse `transfer.json` and read/write `me.info` state file.
+[1.2] Server: Read `port.info` (fallback to 1369), setup SQLite `defensive.db` (clients and files tables).
+
+**Phase 2: Cryptography Wrappers**
+[2.1] Client: C++ Crypto++ wrapper (Generate RSA-1024, Base64 encode/decode, AES-CBC-256 encryption/decryption).
+[2.2] Server: Python PyCryptodome wrapper (Generate AES-256, RSA decryption, CBC padding).
+
+**Phase 3: Protocol & Networking Layer**
+[3.1] Client & Server: Define structs/dataclasses for Request/Response Headers. Implement Little-Endian serialization/deserialization.
+[3.2] Client: boost::asio TCP client wrapper (connect, send chunk, receive chunk).
+[3.3] Server: Python Threaded TCP Server core loop and request routing.
+
+**Phase 4: Registration & Key Exchange (Business Logic)**
+[4.1] Client+Server: Handle Req 825 (Register) -> Res 1600/1601.
+[4.2] Client+Server: Handle Req 826 (Public Key X.509) -> Res 1602 (Encrypted AES Key).
+[4.3] Client+Server: Handle Req 827 (Reconnect) -> Res 1605/1606.
+
+**Phase 5: File Transfer & Integrity**
+[5.1] Client: Read file in chunks, encrypt with AES, build Req 828 packets.
+[5.2] Server: Receive chunks, decrypt AES, save to disk.
+[5.3] Server: Calculate Linux-compatible `cksum` (CRC) and send Res 1603.
+[5.4] Client: Calculate local CRC, compare. Send Req 900 (OK), 901 (Retry), or 902 (Abort).
+[5.5] Server: Handle retry logic and final DB updates (Verified flag).
+
+=== CURRENT TASK ===
+Please acknowledge these rules. We are currently starting: [הכנס כאן את השלב, למשל Phase 1.1] 
+Provide the exact architectural layout and code for this specific step.

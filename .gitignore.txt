@@ -1,0 +1,24 @@
+# C++ & IDEs (Visual Studio / CLion)
+.vs/
+.idea/
+cmake-build-*/
+out/
+x64/
+Debug/
+Release/
+*.exe
+*.obj
+*.pdb
+*.ilk
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Project Specific (Generated state & DB files)
+defensive.db
+me.info
+priv.key
