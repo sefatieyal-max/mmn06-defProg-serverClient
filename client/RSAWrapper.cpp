@@ -14,8 +14,7 @@ RSAPublicWrapper::RSAPublicWrapper(const std::string& key)
 }
 
 RSAPublicWrapper::~RSAPublicWrapper()
-{
-}
+= default;
 
 std::string RSAPublicWrapper::getPublicKey() const
 {
@@ -68,8 +67,7 @@ RSAPrivateWrapper::RSAPrivateWrapper(const std::string& key)
 }
 
 RSAPrivateWrapper::~RSAPrivateWrapper()
-{
-}
+= default;
 
 std::string RSAPrivateWrapper::getPrivateKey() const
 {
@@ -88,7 +86,7 @@ char* RSAPrivateWrapper::getPrivateKey(char* keyout, unsigned int length) const
 
 std::string RSAPrivateWrapper::getPublicKey() const
 {
-	CryptoPP::RSAFunction publicKey(_privateKey);
+	CryptoPP::RSAFunction publicKey(static_cast<CryptoPP::RSAFunction>(_privateKey));
 	std::string key;
 	CryptoPP::StringSink ss(key);
 	publicKey.Save(ss);
@@ -97,7 +95,7 @@ std::string RSAPrivateWrapper::getPublicKey() const
 
 char* RSAPrivateWrapper::getPublicKey(char* keyout, unsigned int length) const
 {
-	CryptoPP::RSAFunction publicKey(_privateKey);
+	CryptoPP::RSAFunction publicKey(static_cast<CryptoPP::RSAFunction>(_privateKey));
 	CryptoPP::ArraySink as(reinterpret_cast<CryptoPP::byte*>(keyout), length);
 	publicKey.Save(as);
 	return keyout;

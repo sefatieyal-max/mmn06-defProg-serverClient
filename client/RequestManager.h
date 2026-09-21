@@ -39,6 +39,14 @@ private:
         std::vector<uint8_t> payload;
     };
 
+    ///@brief helper function for safe copy std::string into char array
+    template <size_t N>
+    static void safeStrCopy(char (&dest)[N], const std::string& src) {
+        size_t len = std::min(N-1, src.length());
+        std::memcpy(dest, src.c_str(), len);
+        dest[len] = '\0';
+    }
+
     ///@brief template function that create header and send the header and the payload of the request
     template <typename PayloadType>
     void sendRequest(const std::string& clientId,RequestCode code,const PayloadType& payload, const std::string& data = "") {
@@ -56,7 +64,7 @@ private:
     ///@brief receive and read server response
     ServerResponse receiveResponse();
     ///@brief helper function that create request header
-    RequestHeader createHeader(const std::string& clientId, RequestCode code, uint32_t payloadSize);
+    static RequestHeader createHeader(const std::string& clientId, RequestCode code, uint32_t payloadSize);
     ///@brief helper function that send the file in packets
     ///@return the rcr response from the server
     uint32_t transferFileInPackets(const std::string& clientId, uint32_t origFileSize, const std::string& fileName, const std::string& encryptedData);
@@ -65,9 +73,9 @@ private:
     ///@param data is the UUID in bytes
     ///@param len is the length of the bytes
     ///@return the UUID in hexa
-    std::string bytesToHex(const uint8_t* data, size_t len);
+    static std::string bytesToHex(const uint8_t* data, size_t len);
     ///@brief translate UUID string into bytes
     ///@param hex is the UUID in hexa string
     ///@param bytes is the UUID in bytes
-    void hexToBytes(const std::string &hex, uint8_t *bytes) const;
+    static void hexToBytes(const std::string &hex, uint8_t *bytes);
 };

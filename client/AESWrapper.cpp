@@ -1,5 +1,4 @@
 #include "AESWrapper.h"
-
 #include <cryptopp/modes.h>
 #include <cryptopp/aes.h>
 #include <cryptopp/filters.h>
@@ -33,8 +32,7 @@ AESWrapper::AESWrapper(const std::string& key)
 }
 
 AESWrapper::~AESWrapper()
-{
-}
+= default;
 
 const unsigned char* AESWrapper::getKey() const 
 { 

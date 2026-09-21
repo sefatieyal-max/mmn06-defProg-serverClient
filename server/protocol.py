@@ -1,6 +1,7 @@
 import struct
 from enum import IntEnum
 
+
 class RequestCode(IntEnum):
     Register = 825
     SendPublicKey = 826
@@ -23,6 +24,7 @@ class ResponseCode(IntEnum):
 # --------------constant--------------
 CHUNK_SIZE = 4096
 VERSION = 3
+MAX_PAYLOAD_SIZE = 50 * 1024 * 1024
 REQUEST_HEADER_FORMAT = '<16s B H I'
 REQUEST_HEADER_SIZE = struct.calcsize(REQUEST_HEADER_FORMAT)
 RESPONSE_HEADER_FORMAT = '< B H I'

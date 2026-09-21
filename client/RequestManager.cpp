@@ -28,7 +28,7 @@ void RequestManager::registerClient() {
 
     //build payload
     PayloadName requestPayload = {};
-    std::strncpy(requestPayload.name, m_serverInfo.clientName.c_str(), NAME_LEN-1);
+    safeStrCopy(requestPayload.name, m_serverInfo.clientName);
 
     //send request
     sendRequest("",RequestCode::Register,requestPayload);
@@ -84,7 +84,7 @@ void RequestManager::sendPublicKey() {
 
     // build payload
     PayloadPublicKey reqPayload = {};
-    std::strncpy(reqPayload.name, m_serverInfo.clientName.c_str(), NAME_LEN-1);
+    safeStrCopy(reqPayload.name, m_serverInfo.clientName);
     std::memcpy(reqPayload.publicKey, publicKey.data(), PUBLIC_KEY_SIZE);
 
     //send request
@@ -116,7 +116,7 @@ bool RequestManager::reconnect() {
     //build payload
     PayloadName reqPayload = {};
     std::memset(reqPayload.name, 0, NAME_LEN);
-    std::strncpy(reqPayload.name, m_serverInfo.clientName.c_str(), NAME_LEN-1);
+    safeStrCopy(reqPayload.name, m_serverInfo.clientName);
 
     //send request
     sendRequest(clientInfo.uuid,RequestCode::Reconnect,reqPayload);
@@ -158,7 +158,7 @@ void RequestManager::sendFile(const std::string &filePath) {
     ClientInfo clientInfo = ClientFileManager::readClientInfo(CLIENT_INFO_PATH);
     //prepare CRC payload
     PayloadCRC crcPayload = {};
-    std::strncpy(crcPayload.name, fileName.c_str(), NAME_LEN-1);
+    safeStrCopy(crcPayload.name, fileName);
 
     // send file in number of tries
     bool success = false;
@@ -212,7 +212,7 @@ RequestHeader RequestManager::createHeader(const std::string &clientId, RequestC
 }
 
 uint32_t RequestManager::transferFileInPackets(const std::string &clientId, uint32_t origFileSize, const std::string &fileName,const std::string& encryptedData) {
-    uint16_t totalPackets = static_cast<uint16_t>((encryptedData.length()+PACKET_SIZE-1)/PACKET_SIZE);
+    auto totalPackets = static_cast<uint16_t>((encryptedData.length()+PACKET_SIZE-1)/PACKET_SIZE);
     if (totalPackets == 0) totalPackets = 1;
 
     for (uint16_t packetNum = 1; packetNum <= totalPackets; packetNum++) {
@@ -227,7 +227,7 @@ uint32_t RequestManager::transferFileInPackets(const std::string &clientId, uint
         reqPayload.origFileSize = origFileSize;
         reqPayload.packetNumber = packetNum;
         reqPayload.totalPackets = totalPackets;
-        std::strncpy(reqPayload.fileName, fileName.c_str(), NAME_LEN-1);
+        safeStrCopy(reqPayload.fileName, fileName);
 
         //send request
         sendRequest(clientId,RequestCode::SendFile,reqPayload,packetData);
@@ -253,7 +253,7 @@ std::string RequestManager::bytesToHex(const uint8_t* data, size_t len) {
     }
     return oss.str();
 }
-void RequestManager::hexToBytes(const std::string &hex, uint8_t *bytes) const {
+void RequestManager::hexToBytes(const std::string &hex, uint8_t *bytes) {
     for (size_t i = 0; i < hex.length() && i < UUID_LEN; i +=2) {
         std::string bytesString = hex.substr(i, 2);
         bytes[i/2] = static_cast<uint8_t>(std::strtol(bytesString.c_str(), nullptr, 16));

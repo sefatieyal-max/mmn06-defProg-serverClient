@@ -10,8 +10,8 @@
 class RSAPublicWrapper
 {
 public:
-	static const unsigned int KEYSIZE = 160;
-	static const unsigned int BITS = 1024;
+	static constexpr unsigned int KEYSIZE = 160;
+	static constexpr unsigned int BITS = 1024;
 
 private:
 	CryptoPP::AutoSeededRandomPool _rng;
@@ -22,10 +22,11 @@ private:
 public:
 
 	RSAPublicWrapper(const char* key, unsigned int length);
-	RSAPublicWrapper(const std::string& key);
+
+	explicit RSAPublicWrapper(const std::string& key);
 	~RSAPublicWrapper();
 
-	std::string getPublicKey() const;
+	[[nodiscard]] std::string getPublicKey() const;
 	char* getPublicKey(char* keyout, unsigned int length) const;
 
 	std::string encrypt(const std::string& plain);
@@ -36,7 +37,7 @@ public:
 class RSAPrivateWrapper
 {
 public:
-	static const unsigned int BITS = 1024;
+	static constexpr unsigned int BITS = 1024;
 
 private:
 	CryptoPP::AutoSeededRandomPool _rng;
@@ -50,10 +51,10 @@ public:
 	RSAPrivateWrapper(const std::string& key);
 	~RSAPrivateWrapper();
 
-	std::string getPrivateKey() const;
+	[[nodiscard]] std::string getPrivateKey() const;
 	char* getPrivateKey(char* keyout, unsigned int length) const;
 
-	std::string getPublicKey() const;
+	[[nodiscard]] std::string getPublicKey() const;
 	char* getPublicKey(char* keyout, unsigned int length) const;
 
 	std::string decrypt(const std::string& cipher);

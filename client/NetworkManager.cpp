@@ -1,10 +1,11 @@
 #include "NetworkManager.h"
 #include <stdexcept>
 #include <iostream>
+#include <utility>
 
 
-NetworkManager::NetworkManager(const std::string &ip, uint16_t port) :
-    m_ip(ip), m_port(port), m_socket(m_io){
+NetworkManager::NetworkManager(std::string ip, uint16_t port) :
+    m_ip(std::move(ip)), m_port(port), m_socket(m_io){
 
 }
 

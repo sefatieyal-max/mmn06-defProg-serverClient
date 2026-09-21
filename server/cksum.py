@@ -4,7 +4,6 @@ python.
 
 The constants and routine are cribbed from the POSIX man page
 """
-import sys
 
 crctab = [ 0x00000000, 0x04c11db7, 0x09823b6e, 0x0d4326d9, 0x130476dc,
         0x17c56b6b, 0x1a864db2, 0x1e475005, 0x2608edb8, 0x22c9f00f,
@@ -63,10 +62,10 @@ UNSIGNED = lambda n: n & 0xffffffff
 
 def memcrc(b):
     n = len(b)
-    i = c = s = 0
+    s = 0
     for ch in b:
         tabidx = (s>>24)^ch
-        s = UNSIGNED((s << 8)) ^ crctab[tabidx]
+        s = UNSIGNED(s << 8) ^ crctab[tabidx]
 
     while n:
         c = n & 0o377

@@ -438,13 +438,12 @@ crctab[8][256] = {
 
 #define UNSIGNED(n) (n & 0xffffffff)
 
-unsigned long memcrc(char * b, size_t n) {
-    unsigned int v = 0, c = 0;
+unsigned long memcrc(const char * b, size_t n) {
+    unsigned int c = 0;
     unsigned long s = 0;
-    unsigned int tabidx;
 
     for (int i = 0; i < n; i++) {
-        tabidx = (s >> 24) ^ (unsigned char)b[i];
+        const unsigned int tabidx = (s >> 24) ^ static_cast<unsigned char>(b[i]);
         s = UNSIGNED((s << 8)) ^ crctab[0][tabidx];
     }
 

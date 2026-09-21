@@ -1,6 +1,8 @@
-import sqlite3
 import logging
-from datetime import datetime
+
+logger = logging.getLogger(__name__)
+import sqlite3
+from datetime import datetime, timezone
 
 
 class Database:
@@ -45,9 +47,9 @@ class Database:
                     )
                 ''')
                 conn.commit()
-                logging.info(f"database created at {self.db_path}")
+                logger.info(f"database created at {self.db_path}")
         except sqlite3.Error as e:
-            logging.critical(f"error creating database: {e}")
+            logger.critical(f"error creating database: {e}")
             raise
 
     def client_exists(self, name:str) -> bool:
@@ -58,7 +60,7 @@ class Database:
                 cursor.execute("SELECT 1 FROM clients WHERE Name = ?", (name,))
                 return cursor.fetchone() is not None
         except sqlite3.Error as e:
-            logging.error(f"Error checking if client {name} exists in database: {e}")
+            logger.error(f"Error checking if client {name} exists in database: {e}")
             raise
 
     def register_client(self, client_id: bytes, name:str):
@@ -66,7 +68,7 @@ class Database:
         try:
             with sqlite3.connect(self.db_path) as conn:
                 cursor = conn.cursor()
-                last_seen = datetime.now().isoformat()
+                last_seen =datetime.now(timezone.utc).isoformat()
 
                 cursor.execute(
                     "INSERT INTO clients (ID, Name, LastSeen) VALUES (?, ?, ?)",
@@ -74,7 +76,7 @@ class Database:
                 )
                 conn.commit()
         except sqlite3.Error as e:
-            logging.error(f"Error registering client: {e}")
+            logger.error(f"Error registering client: {e}")
             raise
 
     def update_client_key(self, client_id: bytes,public_key: bytes, aes_key: bytes):
@@ -89,7 +91,7 @@ class Database:
                 conn.commit()
                 return cursor.rowcount > 0
         except sqlite3.Error as e:
-            logging.error(f"Error updating client key for ID {client_id}: {e}")
+            logger.error(f"Error updating client key for ID {client_id}: {e}")
             raise
 
     def update_client_last_seen(self, client_id: bytes) -> bool:
@@ -97,7 +99,7 @@ class Database:
         try:
             with sqlite3.connect(self.db_path) as conn:
                 cursor = conn.cursor()
-                current_time = datetime.now().isoformat()
+                current_time = datetime.now(timezone.utc).isoformat()
                 cursor.execute(
                     "UPDATE clients SET LastSeen = ? WHERE ID = ?",
                     (current_time, client_id)
@@ -105,7 +107,7 @@ class Database:
                 conn.commit()
                 return cursor.rowcount > 0
         except sqlite3.Error as e:
-            logging.error(f"Error updating client last seen for ID {client_id}: {e}")
+            logger.error(f"Error updating client last seen for ID {client_id}: {e}")
             raise
 
     def get_client_public_key(self, client_id: bytes) -> bytes | None:
@@ -121,7 +123,7 @@ class Database:
                     return row[0]
                 return None
         except sqlite3.Error as e:
-            logging.error(f"Error getting client public key for ID {client_id}: {e}")
+            logger.error(f"Error getting client public key for ID {client_id}: {e}")
             return None
 
     def get_client_aes_key(self, client_id: bytes) -> bytes | None:
@@ -136,7 +138,7 @@ class Database:
                     return row[0]
                 return None
         except sqlite3.Error as e:
-            logging.error(f"Error getting client AES key for ID {client_id}: {e}")
+            logger.error(f"Error getting client AES key for ID {client_id}: {e}")
             return None
 
     def save_file(self, client_id: bytes, filename: str, pathname: str):
@@ -150,7 +152,7 @@ class Database:
                 )
                 conn.commit()
         except sqlite3.Error as e:
-            logging.error(f"Error saving file to database: {e}")
+            logger.error(f"Error saving file to database: {e}")
             raise
 
     def update_file_verified(self, client_id: bytes, filename: str):
@@ -166,5 +168,5 @@ class Database:
                 # return is we find and change the line
                 return cursor.rowcount > 0
         except sqlite3.Error as e:
-            logging.error(f"Error updating file to verified status for file {filename}: {e}")
+            logger.error(f"Error updating file to verified status for file {filename}: {e}")
             raise

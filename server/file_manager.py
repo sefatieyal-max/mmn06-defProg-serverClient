@@ -1,9 +1,11 @@
 import os
 import struct
+
+import protocol
 from cksum import memcrc
 from crypto_manager import CryptoManager
 from database import Database
-import protocol
+
 
 class FileManager:
     """ class handles file transfer related functions """
@@ -19,7 +21,7 @@ class FileManager:
         header_data = payload[:protocol.REQ_FILE_HEADER_SIZE]
         encrypted_data = payload[protocol.REQ_FILE_HEADER_SIZE:]
 
-        content_size, orig_file_size, packet_num, total_packets, name_bytes = struct.unpack(protocol.REQ_FILE_HEADER_FORMAT, header_data)
+        content_size, _orig_file_size, packet_num, total_packets, name_bytes = struct.unpack(protocol.REQ_FILE_HEADER_FORMAT, header_data)
         file_name = name_bytes.split(b'\0',1)[0].decode('ascii')
         # clean the file name
         file_name = os.path.basename(file_name)
@@ -54,7 +56,7 @@ class FileManager:
             file_encrypted_data = f.read()
 
         decrypted_data = CryptoManager.decrypt_aes_key(aes_key, file_encrypted_data)
-        if not decrypted_data:
+        if decrypted_data is None:
             raise ValueError("Decryption failed")
 
         with open(file_path, 'wb') as f:

@@ -8,7 +8,7 @@
 class NetworkManager {
 public:
         ///@brief constructor for the network with ip and port
-        NetworkManager(const std::string& ip, uint16_t port);
+        NetworkManager(std::string  ip, uint16_t port);
 
         NetworkManager(const NetworkManager&) = delete;
         NetworkManager& operator=(const NetworkManager&) = delete;
